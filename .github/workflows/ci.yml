@@ -45,3 +45,26 @@ jobs:
           arm-none-eabi-gcc $FLAGS $INC bootloader/boot_main.c
           arm-none-eabi-gcc $FLAGS $INC code/ota.c
           echo "syntax check passed"
+
+  firmware:
+    name: Build bootloader firmware
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install toolchain
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y gcc-arm-none-eabi
+
+      - name: Build
+        run: make -C gcc
+
+      - name: Upload hex
+        uses: actions/upload-artifact@v4
+        with:
+          name: Bootloader-hex
+          path: |
+            gcc/build/Bootloader.hex
+            gcc/build/Bootloader.elf
+          if-no-files-found: error

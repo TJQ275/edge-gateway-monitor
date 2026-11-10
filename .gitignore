@@ -17,6 +17,7 @@ bootloader/Bootloader/
 *.uvoptx
 RTE/
 DebugConfig/
+gcc/build/
 
 # unused LVGL demo assets (57 MB, not compiled)
 Lvgl/demos/
