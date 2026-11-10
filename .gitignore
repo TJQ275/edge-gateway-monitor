@@ -1,0 +1,29 @@
+# build output
+MDK-ARM/F4project/
+bootloader/Bootloader/
+*.o
+*.d
+*.crf
+*.axf
+*.hex
+*.bin
+*.map
+*.lst
+*.htm
+*.dep
+*.lnp
+*.uvguix.*
+*.uvoptx
+RTE/
+DebugConfig/
+
+# unused LVGL demo assets (57 MB, not compiled)
+Lvgl/demos/
+
+# local credentials (never commit)
+ESP8266/secrets.h
+
+# misc
+*.zip
+*.bak
+*.7z

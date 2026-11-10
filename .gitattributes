@@ -1,0 +1,2 @@
+# keep files byte-exact (project mixes GBK and UTF-8 sources)
+* -text
