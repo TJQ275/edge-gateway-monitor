@@ -26,6 +26,9 @@ typedef struct
     uint16_t err_cnt;    //连续失败次数
     float    val1;       //数据1
     float    val2;       //数据2
+    float    scale1;     //缩放1
+    float    scale2;     //缩放2
+    uint8_t  kind;       //0=两个16位量 1=一个32位量
 }ModDev_t;
 
 extern ModDev_t dev_list[];

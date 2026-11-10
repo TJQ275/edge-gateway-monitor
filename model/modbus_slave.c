@@ -4,6 +4,7 @@
 #include "string.h"
 #include "modbus.h"
 #include "flash.h"
+#include "app_config.h"
 #include "ota.h"
 #include "modbus_slave.h"
 
@@ -91,10 +92,10 @@ static void HandleFrame(uint8_t *f, uint8_t n)
 
 static void UpdateRegs(void)
 {
-    uint32_t lux = (dev_cnt > 1) ? (uint32_t)dev_list[1].val1 : 0;
+    uint32_t lux = (uint32_t)dev_list[APP_IDX_LIGHT].val1;
 
-    regs[R_TEMP]  = (uint16_t)(dev_list[0].val1 * 10.0f);
-    regs[R_HUMI]  = (uint16_t)(dev_list[0].val2 * 10.0f);
+    regs[R_TEMP]  = (uint16_t)(dev_list[APP_IDX_TEMP_HUMI].val1 * 10.0f);
+    regs[R_HUMI]  = (uint16_t)(dev_list[APP_IDX_TEMP_HUMI].val2 * 10.0f);
     regs[R_LUX_H] = (uint16_t)(lux >> 16);
     regs[R_LUX_L] = (uint16_t)(lux & 0xFFFF);
     regs[R_NET]   = g_mqtt_connected;

@@ -6,6 +6,7 @@ bootloader/Bootloader/
 *.crf
 *.axf
 *.hex
+!firmware/*.hex
 *.bin
 *.map
 *.lst

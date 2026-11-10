@@ -7,6 +7,7 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "flash.h"
+#include "app_config.h"
 #include "Taskhandel.h"
 /* ================================================================
  *	查表法
@@ -124,10 +125,7 @@ uint16_t CRC_16_MODBUS(uint8_t *data,uint8_t len,uint8_t flag)
 
 
 // 结构体数组 多从机配置：地址、功能码、起始寄存器、寄存器数量、错误计数、数据
- ModDev_t dev_list[]={
-    {0x01,0x03,0x0001,2,0,0,0}, //1#温湿度
-    {0x02,0x03,0x0002,2,0,0,0} //2#光照
-};
+ ModDev_t dev_list[] = APP_DEV_LIST;
 uint8_t dev_cnt = sizeof(dev_list)/sizeof(ModDev_t);
 #define MAX_ERR_CNT 5   //连续失败5次临时跳过该设备
 
@@ -219,22 +217,16 @@ void Modbus_Poll_AllDev(void)
         if(Modbus_Read_Dev(p->dev_addr,p->func,p->reg_start,p->reg_num,tmp_buf)==1)
         {
          //   p->err_cnt = 0; //成功清零错误计数
-            //根据从机地址解析数据
-            switch(p->dev_addr)
+            //按配置解析数据
+            if(p->kind == 1U)
             {
-                case 0x01: //温湿度
-                    p->val1 = tmp_buf[0]/10.0f;
-                    p->val2 = tmp_buf[1]/10.0f;
-                    break;
-                case 0x02: //光照
-                    p->val1 = ((uint32_t)tmp_buf[0]<<16 | tmp_buf[1])/1000;
-                    p->val2 = 0;
-                    break;
-//                case 0x03: //继电器状态
-//                    p->val1 = tmp_buf[0];
-//                    p->val2 = 0;
-//                    break;
-                default:break;
+                p->val1 = (float)(((uint32_t)tmp_buf[0] << 16) | tmp_buf[1]) / p->scale1;
+                p->val2 = 0.0f;
+            }
+            else
+            {
+                p->val1 = (float)tmp_buf[0] / p->scale1;
+                p->val2 = (float)tmp_buf[1] / p->scale2;
             }
         }
 //        else
@@ -258,9 +250,9 @@ void Modbus_Upload_Json(void)
     
     Data_t uidata;
 	
-    uidata.temp = dev_list[0].val1;
-    uidata.shi = dev_list[0].val2;
-		uidata.light= dev_list[1].val1;
+    uidata.temp  = dev_list[APP_IDX_TEMP_HUMI].val1;
+    uidata.shi   = dev_list[APP_IDX_TEMP_HUMI].val2;
+    uidata.light = dev_list[APP_IDX_LIGHT].val1;
     xQueueOverwrite(data_queue, &uidata);
 }
 
@@ -276,14 +268,14 @@ void MQTT_SendAllDev_NoWait(void)
     for(uint8_t i=0;i<dev_cnt;i++)
     {
         ModDev_t *pt=&dev_list[i];
-        if(pt->dev_addr == 0x01 )
+        if(i == APP_IDX_TEMP_HUMI)
         {
             //01温湿度：温度、湿度
             p += sprintf(payload+p,"{\"temp\":%.1f,\"humi\":%.1f,",pt->val1,pt->val2);
 						UIdat.temp=pt->val1;
 						UIdat.shi=pt->val2;
         }
-        else if(pt->dev_addr == 0x02)
+        else if(i == APP_IDX_LIGHT)
         {
             //02光照
             p += sprintf(payload+p,"\"light\":%.0f},",pt->val1);
