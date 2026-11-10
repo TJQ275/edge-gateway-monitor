@@ -4,11 +4,11 @@
 
 
 
-void Dog_task();
-void MQTT();
-void AT();
-void UI();
-void Modbus();
+void Dog_task(void *argument);
+void MQTT(void *argument);
+void AT(void *argument);
+void UI(void *argument);
+void Modbus(void *argument);
 void page_log_refresh(void);
 extern  volatile uint8_t connect;
 

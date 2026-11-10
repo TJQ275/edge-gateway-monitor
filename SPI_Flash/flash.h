@@ -75,6 +75,6 @@ void MQTT_SendTempHumi_WithCache(float temp, float humi);
 
 void FlashCache_MarkSent(void);
 int FlashCache_ReadAndConsume(char *json, uint16_t *len);
-void my_clear();
+void my_clear(void);
 #endif
 

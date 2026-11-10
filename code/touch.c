@@ -43,15 +43,6 @@ uint16_t TP_ReadY(void)
     return TP_Read_AD(0x90);
 }
 
-// 读取压力值（Z1 和 Z2）
-static uint16_t TP_ReadPressure(void)
-{
-    uint16_t z1 = TP_Read_AD(0xB1);
-    uint16_t z2 = TP_Read_AD(0xC1);
-    if (z1 == 0) return 0;
-    return (z2 * 100) / z1;   // 简单压力值
-}
-
 void TP_Init(void)
 {
     TP_CS_SET;
@@ -104,9 +95,6 @@ uint8_t TP_Get_Calibrated(uint16_t *x, uint16_t *y)
     #define TOUCH_SWAP_XY    1
     #define TOUCH_MIRROR_X   1
     #define TOUCH_MIRROR_Y   1
-
-
-
 
     #define TX_MIN   170
     #define TX_MAX   1900

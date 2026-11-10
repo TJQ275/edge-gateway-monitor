@@ -232,7 +232,7 @@ lv_obj_t *page_main_create(void)
 
     // 左侧：连接状态提示
     label_status = lv_label_create(footer);
-    lv_label_set_text(label_status, "● 等待连接...");
+    lv_label_set_text(label_status, "等待连接...");
     lv_obj_align(label_status, LV_ALIGN_LEFT_MID, 6, 0);
     lv_obj_set_style_text_color(label_status, lv_color_hex(0xE2E8F0), 0);
     lv_obj_set_style_text_font(label_status, &font_chinese_9, 0);

@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  repo-check:
+    name: Repository consistency
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: All sources referenced by the Keil projects exist
+        run: python3 .github/scripts/check_project_files.py
+
+      - name: Local credentials must not be committed
+        run: |
+          if git ls-files --error-unmatch ESP8266/secrets.h >/dev/null 2>&1; then
+            echo "::error::ESP8266/secrets.h is tracked; remove it before pushing"
+            exit 1
+          fi
+          echo "ok: secrets.h is not tracked"
+
+  syntax:
+    name: Syntax check (arm-none-eabi-gcc)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install toolchain
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y gcc-arm-none-eabi
+
+      - name: Check HAL-only sources
+        run: |
+          FLAGS="-mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard -std=gnu11 -fsyntax-only -DSTM32F411xE -DUSE_HAL_DRIVER"
+          INC="-ICore/Inc -IDrivers/STM32F4xx_HAL_Driver/Inc -IDrivers/STM32F4xx_HAL_Driver/Inc/Legacy -IDrivers/CMSIS/Device/ST/STM32F4xx/Include -IDrivers/CMSIS/Include -Icode"
+          arm-none-eabi-gcc $FLAGS $INC bootloader/boot_main.c
+          arm-none-eabi-gcc $FLAGS $INC code/ota.c
+          echo "syntax check passed"

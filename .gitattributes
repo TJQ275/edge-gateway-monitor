@@ -1,2 +1,10 @@
-# keep files byte-exact (project mixes GBK and UTF-8 sources)
+# keep bytes exact by default: the tree mixes GBK and UTF-8 sources
 * -text
+
+# files authored in this repository: normalise to LF
+*.md    text eol=lf
+*.yml   text eol=lf
+*.yaml  text eol=lf
+*.py    text eol=lf
+*.c     text eol=lf
+*.h     text eol=lf

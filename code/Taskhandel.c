@@ -61,8 +61,9 @@ volatile uint8_t connect;
 //    }
 //}
 
-void Modbus(void)
+void Modbus(void *argument)
 {
+    (void)argument;
     while(1)
     {
 			
@@ -84,8 +85,9 @@ void Modbus(void)
 
 从数组里获取数据保证数据是最新的 
 */
-void MQTT(void)
+void MQTT(void *argument)
 {
+    (void)argument;
     vTaskDelay(5000);
     Data_t data_q;
     while (1)
@@ -145,7 +147,6 @@ xSemaphoreTake(uart1_mutex, portMAX_DELAY);				//获取锁
            
 						
         }
-        vTaskDelay(2000);
     //}
 }
 
@@ -155,8 +156,9 @@ xSemaphoreTake(uart1_mutex, portMAX_DELAY);				//获取锁
 连续3次心跳应答错误或失败则判断离线
 离线后 每10秒执行重连函数直到连接成功
 */
-void AT(void)
+void AT(void *argument)
 {
+    (void)argument;
 	MQTT_Init();							//连接成功后 g_mqtt_connected为1 否则为0
 
     uint8_t heart_fail = 0;  // 心跳连续失败次数
@@ -210,8 +212,9 @@ void AT(void)
 // ==============================================
 // UI 显示
 // ==============================================
-void UI(void)
+void UI(void *argument)
 {
+    (void)argument;
     Data_t disp_data;
 
     LCD_Init();
@@ -228,7 +231,6 @@ void UI(void)
     uint8_t  last_status = 0xFF;      // 记录上一次的 MQTT 状态
     uint32_t last_uptime  = 0xFFFFFFFF; // 记录上一次的运行时间    魔法数
 		
-		uint32_t log_tick =0; //定义局部计时变量
 	
 	while (1)				//任务函数 不会退出该函数 故局部变量不会被清空
     {
@@ -274,8 +276,9 @@ void UI(void)
 
 
 /*看门狗任务 3秒喂一次狗 溢出时间是20秒*/
-void Dog_task()
+void Dog_task(void *argument)
 {
+    (void)argument;
 	
 	while(1)
 	{
